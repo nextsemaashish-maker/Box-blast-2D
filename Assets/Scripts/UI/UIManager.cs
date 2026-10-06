@@ -1814,8 +1814,9 @@ namespace BoxBlast
             if (clBtnY < minAllowedClY) clBtnY = minAllowedClY;
             float advBtnY = clBtnY + 126f + 20f;
 
-            // 3. Rotating 3D spheres cluster centered symmetrically between subtitle and Adventure button
-            float subBottomY = (214f + titleOffsetY) - 16f;
+            // 3. Rotating 3D spheres cluster centered symmetrically between title logo and Adventure button
+            float logoBottomY = (310f + titleOffsetY) - 217f; // 434 / 2 = 217 -> bottom edge of full logo
+            float subBottomY = logoBottomY - 15f;
             float advTopY = advBtnY + 63f;
             float clusterY = (subBottomY + advTopY) / 2f;
 
@@ -1823,8 +1824,8 @@ namespace BoxBlast
             GameObject titleGlowObj = new GameObject("TitleBackdropGlow");
             titleGlowObj.transform.SetParent(centerObj.transform, false);
             RectTransform tgRt = titleGlowObj.AddComponent<RectTransform>();
-            tgRt.anchoredPosition = new Vector2(0, 360f + titleOffsetY);
-            tgRt.sizeDelta = new Vector2(720, 360);
+            tgRt.anchoredPosition = new Vector2(0, 310f + titleOffsetY);
+            tgRt.sizeDelta = new Vector2(720, 420);
             Image tgImg = titleGlowObj.AddComponent<Image>();
             tgImg.sprite = SpriteFactory.GetSoftGlowOrbSprite();
             tgImg.color = new Color(0.20f, 0.52f, 1.0f, 0.28f);
@@ -1847,8 +1848,8 @@ namespace BoxBlast
             GameObject crownTapObj = new GameObject("Crown_InteractiveZone");
             crownTapObj.transform.SetParent(logoObj.transform, false);
             RectTransform crRt = crownTapObj.AddComponent<RectTransform>();
-            crRt.anchoredPosition = new Vector2(-105f, 145f);
-            crRt.sizeDelta = new Vector2(130, 110);
+            crRt.anchoredPosition = new Vector2(-110f, 120f);
+            crRt.sizeDelta = new Vector2(140, 120);
             Button crBtn = crownTapObj.AddComponent<Button>();
             crBtn.transition = Selectable.Transition.None;
             crBtn.onClick.AddListener(() =>

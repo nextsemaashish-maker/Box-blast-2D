@@ -5,15 +5,6 @@ TextureImporter:
   - first:
       213: -8554112290216569517
     second: SphereBlastLogoHD_0
-  - first:
-      213: -8110262212710837872
-    second: SphereBlastLogoHD_1
-  - first:
-      213: 9016787778654423962
-    second: SphereBlastLogoHD_2
-  - first:
-      213: 8168745706783499946
-    second: SphereBlastLogoHD_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -140,12 +131,12 @@ TextureImporter:
       name: SphereBlastLogoHD_0
       rect:
         serializedVersion: 2
-        x: 10
-        y: 254
-        width: 897
-        height: 397
+        x: 0
+        y: 0
+        width: 917
+        height: 662
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -154,72 +145,6 @@ TextureImporter:
       bones: []
       spriteID: 35596d49130b94980800000000000000
       internalID: -8554112290216569517
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SphereBlastLogoHD_1
-      rect:
-        serializedVersion: 2
-        x: 123
-        y: 64
-        width: 682
-        height: 225
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 091d810dc7f827f80800000000000000
-      internalID: -8110262212710837872
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SphereBlastLogoHD_2
-      rect:
-        serializedVersion: 2
-        x: 199
-        y: 10
-        width: 299
-        height: 48
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a9bc7c136b0122d70800000000000000
-      internalID: 9016787778654423962
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: SphereBlastLogoHD_3
-      rect:
-        serializedVersion: 2
-        x: 506
-        y: 11
-        width: 201
-        height: 47
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: aa6e351c0f63d5170800000000000000
-      internalID: 8168745706783499946
       vertices: []
       indices: 
       edges: []
@@ -239,9 +164,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       SphereBlastLogoHD_0: -8554112290216569517
-      SphereBlastLogoHD_1: -8110262212710837872
-      SphereBlastLogoHD_2: 9016787778654423962
-      SphereBlastLogoHD_3: 8168745706783499946
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

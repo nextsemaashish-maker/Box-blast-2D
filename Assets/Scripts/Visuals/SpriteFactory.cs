@@ -1144,8 +1144,21 @@ private static Texture2D CreateCrispTexture(int w, int h)
             if (s_SpriteCache.TryGetValue(key, out Sprite cached) && cached != null && cached.texture != null) return cached;
 
             Sprite loaded = Resources.Load<Sprite>("SphereBlastLogoHD");
-            if (loaded != null)
+            if (loaded != null && loaded.texture != null)
             {
+                // If the sprite was sliced into sub-sprites (e.g. cutting off BLAST), create a full-coverage sprite
+                if (loaded.rect.height < loaded.texture.height * 0.95f || loaded.rect.width < loaded.texture.width * 0.95f)
+                {
+                    Sprite fullSprite = Sprite.Create(
+                        loaded.texture,
+                        new Rect(0, 0, loaded.texture.width, loaded.texture.height),
+                        new Vector2(0.5f, 0.5f),
+                        100f
+                    );
+                    s_SpriteCache[key] = fullSprite;
+                    return fullSprite;
+                }
+
                 s_SpriteCache[key] = loaded;
                 return loaded;
             }
