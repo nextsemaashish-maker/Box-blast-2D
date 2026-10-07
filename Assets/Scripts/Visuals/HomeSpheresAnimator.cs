@@ -54,6 +54,10 @@ namespace BoxBlast
         private readonly List<SphereItem> m_Spheres = new List<SphereItem>();
         private RectTransform m_ClusterRt;
 
+        // Base Center Position (Symmetrically centered between Logo and Buttons)
+        private float m_BaseCenterY = 0f;
+        private bool m_HasBaseCenterY = false;
+
         // Orbit Parameters
         private float m_RadiusX = 136f;
         private float m_RadiusY = 88f;
@@ -137,6 +141,19 @@ namespace BoxBlast
         }
 
         /// <summary>
+        /// Explicitly sets the base center Y position for the cluster.
+        /// </summary>
+        public void SetBaseCenterY(float y)
+        {
+            m_BaseCenterY = y;
+            m_HasBaseCenterY = true;
+            if (m_ClusterRt != null)
+            {
+                m_ClusterRt.anchoredPosition = new Vector2(0f, m_BaseCenterY);
+            }
+        }
+
+        /// <summary>
         /// Builds and initializes the 6 animated spheres revolving in an orbital ring.
         /// </summary>
         public void Initialize()
@@ -148,6 +165,12 @@ namespace BoxBlast
             if (m_ClusterRt == null)
             {
                 m_ClusterRt = gameObject.AddComponent<RectTransform>();
+            }
+
+            if (!m_HasBaseCenterY && m_ClusterRt != null)
+            {
+                m_BaseCenterY = m_ClusterRt.anchoredPosition.y;
+                m_HasBaseCenterY = true;
             }
 
             // Ensure cluster has raycast background for drag detection
@@ -311,7 +334,7 @@ namespace BoxBlast
             if (m_ClusterRt != null)
             {
                 float clusterHover = Mathf.Sin(t * 1.6f) * 3.5f;
-                m_ClusterRt.anchoredPosition = new Vector2(0f, 65f + clusterHover);
+                m_ClusterRt.anchoredPosition = new Vector2(0f, m_BaseCenterY + clusterHover);
             }
 
             // 3. Center Core Breathing Glow

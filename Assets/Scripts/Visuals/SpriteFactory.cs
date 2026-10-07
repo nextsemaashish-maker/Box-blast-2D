@@ -785,13 +785,13 @@ private static Texture2D CreateCrispTexture(int w, int h)
             return sprite;
         }
 
-        public static Sprite GetChunkyBlockBlastButtonSprite(Color baseColor, Color shadowColor, Color rimHighlight)
+        public static Sprite GetPillSprite(Color fillColor)
         {
-            string key = $"BtnChunkyBB_{ColorUtility.ToHtmlStringRGBA(baseColor)}_{ColorUtility.ToHtmlStringRGBA(shadowColor)}_{ColorUtility.ToHtmlStringRGBA(rimHighlight)}";
+            string key = $"Pill_{ColorUtility.ToHtmlStringRGBA(fillColor)}";
             if (s_SpriteCache.TryGetValue(key, out Sprite cached) && cached != null && cached.texture != null) return cached;
 
             int size = 128;
-            int radius = 32;
+            int radius = 48;
             Texture2D tex = CreateCrispTexture(size, size);
             Color[] pixels = new Color[size * size];
 
@@ -806,29 +806,8 @@ private static Texture2D CreateCrispTexture(int w, int h)
                         continue;
                     }
 
-                    float alpha = Mathf.Clamp01((1.0f - dist) * 20f);
-                    float normY = (float)y / size;
-
-                    Color c;
-                    // Bottom 18% is tactile 3D shadow bevel shelf
-                    if (normY < 0.17f)
-                    {
-                        c = shadowColor;
-                    }
-                    else
-                    {
-                        // Main front face with rich vertical gradient
-                        float faceT = (normY - 0.17f) / 0.83f;
-                        c = Color.Lerp(baseColor, baseColor + Color.white * 0.14f, faceT);
-
-                        // Top rim specular highlight (radiant candy shine along top curve)
-                        if (faceT > 0.86f)
-                        {
-                            float rimT = (faceT - 0.86f) / 0.14f;
-                            c = Color.Lerp(c, rimHighlight, rimT * 0.70f);
-                        }
-                    }
-
+                    float alpha = Mathf.Clamp01((1.0f - dist) * 16f);
+                    Color c = fillColor;
                     c.a *= alpha;
                     pixels[y * size + x] = c;
                 }
@@ -839,6 +818,166 @@ private static Texture2D CreateCrispTexture(int w, int h)
 
             Vector4 border = new Vector4(radius + 2, radius + 2, radius + 2, radius + 2);
             Sprite sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+            s_SpriteCache[key] = sprite;
+            return sprite;
+        }
+
+        public static Sprite GetChunkyBlockBlastButtonSprite(Color baseColor, Color shadowColor, Color rimHighlight)
+        {
+            string key = $"BtnChunkyBB_3D_v2_{ColorUtility.ToHtmlStringRGBA(baseColor)}_{ColorUtility.ToHtmlStringRGBA(shadowColor)}_{ColorUtility.ToHtmlStringRGBA(rimHighlight)}";
+            if (s_SpriteCache.TryGetValue(key, out Sprite cached) && cached != null && cached.texture != null) return cached;
+
+            int width = 256;
+            int height = 128;
+            int radius = 44;
+            int extrusionDepth = 22; // Chunky 3D bottom shelf thickness
+            int capInset = 3;        // Inset of raised top cap from sides and top
+
+            Texture2D tex = CreateCrispTexture(width, height);
+            Color[] pixels = new Color[width * height];
+
+            int capBottom = extrusionDepth;
+            int capTop = height - 1 - capInset;
+            int capLeft = capInset;
+            int capRight = width - 1 - capInset;
+            int capHeight = capTop - capBottom;
+            int capRadius = radius - capInset;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    // Outer capsule distance
+                    float dxOuter = 0f;
+                    if (x < radius) dxOuter = radius - x;
+                    else if (x >= (width - radius)) dxOuter = x - (width - 1 - radius);
+
+                    float dyOuter = 0f;
+                    if (y < radius) dyOuter = radius - y;
+                    else if (y >= (height - radius)) dyOuter = y - (height - 1 - radius);
+
+                    float distOuter = Mathf.Sqrt(dxOuter * dxOuter + dyOuter * dyOuter) / (float)radius;
+                    if (distOuter > 1.0f)
+                    {
+                        pixels[y * width + x] = Color.clear;
+                        continue;
+                    }
+
+                    float alpha = Mathf.Clamp01((1.0f - distOuter) * 16f);
+
+                    // Inner raised pressable cap distance
+                    bool inCap = false;
+                    float distCap = 2.0f;
+                    if (y >= capBottom && x >= capLeft && x <= capRight)
+                    {
+                        float dxCap = 0f;
+                        if (x < (capLeft + capRadius)) dxCap = (capLeft + capRadius) - x;
+                        else if (x >= (capRight - capRadius)) dxCap = x - (capRight - capRadius);
+
+                        float dyCap = 0f;
+                        if (y < (capBottom + capRadius)) dyCap = (capBottom + capRadius) - y;
+                        else if (y >= (capTop - capRadius)) dyCap = y - (capTop - capRadius);
+
+                        distCap = Mathf.Sqrt(dxCap * dxCap + dyCap * dyCap) / (float)capRadius;
+                        if (distCap <= 1.0f) inCap = true;
+                    }
+
+                    Color c;
+                    if (inCap && distCap <= 0.98f)
+                    {
+                        // Raised Pressable Cap Face
+                        float capNormY = (float)(y - capBottom) / (float)capHeight; // 0 at bottom, 1 at top
+
+                        // Rich, warm vertical candy gradient
+                        c = Color.Lerp(baseColor * 0.88f, baseColor + Color.white * 0.30f, capNormY);
+
+                        // Top curved glass specular shine
+                        if (capNormY > 0.50f)
+                        {
+                            float shineT = (capNormY - 0.50f) / 0.50f;
+                            float shine = Mathf.Sin(shineT * Mathf.PI * 0.92f) * 0.46f;
+                            c = Color.Lerp(c, Color.white, shine);
+                        }
+
+                        // Crisp inner top rim highlight
+                        if (capNormY > 0.88f)
+                        {
+                            float rimT = (capNormY - 0.88f) / 0.12f;
+                            c = Color.Lerp(c, rimHighlight, rimT * 0.75f);
+                        }
+                    }
+                    else
+                    {
+                        // 3D Extrusion Shelf / Bevel Pedestal
+                        float shelfNorm = Mathf.Clamp01((float)y / (float)extrusionDepth);
+                        float darken = 0.72f + 0.28f * shelfNorm;
+                        c = shadowColor * darken;
+
+                        // Subtle dark crease right below the raised cap
+                        if (y < capBottom && (capBottom - y) <= 3)
+                        {
+                            c *= 0.78f;
+                        }
+                    }
+
+                    c.a *= alpha;
+                    pixels[y * width + x] = c;
+                }
+            }
+
+            tex.SetPixels(pixels);
+            tex.Apply(true, false);
+
+            Vector4 border = new Vector4(radius + 4, extrusionDepth + 4, radius + 4, radius / 2 + 4);
+            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, width, height), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
+            s_SpriteCache[key] = sprite;
+            return sprite;
+        }
+
+        public static Sprite GetButtonGlossOverlaySprite()
+        {
+            const string key = "BtnGlossOverlay_Pill";
+            if (s_SpriteCache.TryGetValue(key, out Sprite cached) && cached != null && cached.texture != null) return cached;
+
+            int w = 128;
+            int h = 48;
+            int radius = 22;
+            Texture2D tex = CreateCrispTexture(w, h);
+            Color[] pixels = new Color[w * h];
+
+            for (int y = 0; y < h; y++)
+            {
+                float normY = (float)y / (float)(h - 1); // 0 at bottom, 1 at top
+                for (int x = 0; x < w; x++)
+                {
+                    float dx = 0f;
+                    if (x < radius) dx = radius - x;
+                    else if (x >= (w - radius)) dx = x - (w - 1 - radius);
+
+                    float dy = 0f;
+                    if (y < radius) dy = radius - y;
+                    else if (y >= (h - radius)) dy = y - (h - 1 - radius);
+
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy) / (float)radius;
+                    if (dist > 1.0f)
+                    {
+                        pixels[y * w + x] = Color.clear;
+                        continue;
+                    }
+
+                    float pillAlpha = Mathf.Clamp01((1.0f - dist) * 4.0f);
+                    float alpha = pillAlpha * (0.12f + 0.88f * Mathf.Pow(normY, 1.3f));
+                    Color c = Color.white;
+                    c.a = alpha * 0.55f;
+                    pixels[y * w + x] = c;
+                }
+            }
+
+            tex.SetPixels(pixels);
+            tex.Apply(true, false);
+
+            Vector4 border = new Vector4(radius + 2, radius + 2, radius + 2, radius + 2);
+            Sprite sprite = Sprite.Create(tex, new Rect(0, 0, w, h), new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect, border);
             s_SpriteCache[key] = sprite;
             return sprite;
         }

@@ -1805,8 +1805,9 @@ namespace BoxBlast
             cRt.sizeDelta = new Vector2(900, refHeight);
 
             // Responsive vertical layout coordinates:
-            // 1. Title section gracefully positioned near top
+            // 1. Title section gracefully positioned near top (raised slightly so "ADVENTURE MASTER" text is clearly visible)
             float titleOffsetY = Mathf.Clamp((refHeight - 1920f) * 0.18f, 0f, 85f);
+            float titleCenterY = 350f + titleOffsetY;
 
             // 2. Play buttons placed comfortably in lower third thumb zone (matching Block Blast bottom ~16-18% margin)
             float clBtnY = -(refHeight * 0.30f);
@@ -1815,28 +1816,39 @@ namespace BoxBlast
             float advBtnY = clBtnY + 126f + 20f;
 
             // 3. Rotating 3D spheres cluster centered symmetrically between title logo and Adventure button
-            float logoBottomY = (310f + titleOffsetY) - 217f; // 434 / 2 = 217 -> bottom edge of full logo
-            float subBottomY = logoBottomY - 15f;
+            float logoBottomY = titleCenterY - 217f; // 434 / 2 = 217 -> bottom edge of full logo
             float advTopY = advBtnY + 63f;
-            float clusterY = (subBottomY + advTopY) / 2f;
+            float clusterY = (logoBottomY + advTopY) / 2f;
 
             // 0. Ambient Celestial Logo Glow Halo (Soft radial glow centered behind title)
             GameObject titleGlowObj = new GameObject("TitleBackdropGlow");
             titleGlowObj.transform.SetParent(centerObj.transform, false);
             RectTransform tgRt = titleGlowObj.AddComponent<RectTransform>();
-            tgRt.anchoredPosition = new Vector2(0, 310f + titleOffsetY);
+            tgRt.anchoredPosition = new Vector2(0, titleCenterY);
             tgRt.sizeDelta = new Vector2(720, 420);
             Image tgImg = titleGlowObj.AddComponent<Image>();
             tgImg.sprite = SpriteFactory.GetSoftGlowOrbSprite();
             tgImg.color = new Color(0.20f, 0.52f, 1.0f, 0.28f);
             tgImg.raycastTarget = false;
 
-            // 1. Master 3D Candy Balloon Title Logo ("SPHERE BLAST" + Chubby Golden Crown)
-            // Ultra-crisp 4K Studio Render matching Block Blast mobile game quality exactly!
+            // 1. Center 3D Spheres Orbital Cluster with Dynamic Visuals & Juicy Animations!
+            // Placed symmetrically in the center between Logo and Buttons
+            GameObject spheresClusterObj = new GameObject("CenterSpheresCluster");
+            spheresClusterObj.transform.SetParent(centerObj.transform, false);
+            RectTransform clusterRt = spheresClusterObj.AddComponent<RectTransform>();
+            clusterRt.anchoredPosition = new Vector2(0, clusterY);
+            clusterRt.sizeDelta = new Vector2(420, 260);
+
+            HomeSpheresAnimator sphereAnim = spheresClusterObj.AddComponent<HomeSpheresAnimator>();
+            sphereAnim.SetBaseCenterY(clusterY);
+            sphereAnim.Initialize();
+
+            // 2. Master 3D Candy Balloon Title Logo ("SPHERE BLAST" + Chubby Golden Crown + "ADVENTURE MASTER")
+            // Rendered in front of the sphere cluster so "ADVENTURE MASTER" text is always completely clear and never obscured!
             GameObject logoObj = new GameObject("Title_SphereBlast_MasterLogo");
             logoObj.transform.SetParent(centerObj.transform, false);
             RectTransform logoRt = logoObj.AddComponent<RectTransform>();
-            logoRt.anchoredPosition = new Vector2(0, 310f + titleOffsetY);
+            logoRt.anchoredPosition = new Vector2(0, titleCenterY);
             logoRt.sizeDelta = new Vector2(600, 434);
 
             Image logoImg = logoObj.AddComponent<Image>();
@@ -1870,17 +1882,18 @@ namespace BoxBlast
             csgImg.color = new Color(1f, 1f, 1f, 0.95f);
             csgImg.raycastTarget = false;
 
-            // 4. Center 3D Spheres Orbital Cluster with Dynamic Visuals & Juicy Animations!
-            GameObject spheresClusterObj = new GameObject("CenterSpheresCluster");
-            spheresClusterObj.transform.SetParent(centerObj.transform, false);
-            RectTransform clusterRt = spheresClusterObj.AddComponent<RectTransform>();
-            clusterRt.anchoredPosition = new Vector2(0, clusterY);
-            clusterRt.sizeDelta = new Vector2(420, 260);
+            // 5a. Adventure Button Ambient Drop Shadow (Soft dark-blue shadow badge floating underneath)
+            GameObject advShadowObj = new GameObject("Button_Adventure_Shadow");
+            advShadowObj.transform.SetParent(centerObj.transform, false);
+            RectTransform advShadowRt = advShadowObj.AddComponent<RectTransform>();
+            advShadowRt.anchoredPosition = new Vector2(0, advBtnY - 7f);
+            advShadowRt.sizeDelta = new Vector2(644, 126);
+            Image advShadowImg = advShadowObj.AddComponent<Image>();
+            advShadowImg.sprite = SpriteFactory.GetPillSprite(new Color(0.04f, 0.08f, 0.22f, 0.55f));
+            advShadowImg.type = Image.Type.Sliced;
+            advShadowImg.raycastTarget = false;
 
-            HomeSpheresAnimator sphereAnim = spheresClusterObj.AddComponent<HomeSpheresAnimator>();
-            sphereAnim.Initialize();
-
-            // 5. Adventure Button (Bottom Section Top Button - Chunky 3D Golden-Orange with Location Pin Icon)
+            // 5b. Adventure Button (Chunky 3D Golden-Orange Candy Capsule with Gloss Sheen & Location Pin)
             GameObject advBtnObj = new GameObject("Button_Adventure");
             advBtnObj.transform.SetParent(centerObj.transform, false);
             RectTransform advRt = advBtnObj.AddComponent<RectTransform>();
@@ -1888,7 +1901,7 @@ namespace BoxBlast
             advRt.sizeDelta = new Vector2(640, 126);
 
             Image advImg = advBtnObj.AddComponent<Image>();
-            advImg.sprite = SpriteFactory.GetChunkyBlockBlastButtonSprite(new Color(0.98f, 0.63f, 0.08f), new Color(0.78f, 0.40f, 0.02f), new Color(1f, 1f, 1f, 0.75f));
+            advImg.sprite = SpriteFactory.GetChunkyBlockBlastButtonSprite(new Color(0.99f, 0.62f, 0.08f), new Color(0.74f, 0.36f, 0.01f), new Color(1f, 1f, 1f, 0.85f));
             advImg.type = Image.Type.Sliced;
             advImg.raycastTarget = true;
 
@@ -1902,41 +1915,87 @@ namespace BoxBlast
                 }));
             });
 
+            // Curved Gloss Glass Sheen Overlay on Top Half
+            GameObject advGlossObj = new GameObject("GlossShineOverlay");
+            advGlossObj.transform.SetParent(advBtnObj.transform, false);
+            RectTransform advGlossRt = advGlossObj.AddComponent<RectTransform>();
+            advGlossRt.anchorMin = new Vector2(0.5f, 1f);
+            advGlossRt.anchorMax = new Vector2(0.5f, 1f);
+            advGlossRt.pivot = new Vector2(0.5f, 1f);
+            advGlossRt.anchoredPosition = new Vector2(0, -6f);
+            advGlossRt.sizeDelta = new Vector2(560, 42);
+            Image advGlossImg = advGlossObj.AddComponent<Image>();
+            advGlossImg.sprite = SpriteFactory.GetButtonGlossOverlaySprite();
+            advGlossImg.type = Image.Type.Sliced;
+            advGlossImg.color = new Color(1f, 1f, 1f, 0.42f);
+            advGlossImg.raycastTarget = false;
+
+            // Sparkle Glint Dot Highlight on upper-right rim
+            GameObject advGlintObj = new GameObject("GlossDotGlint");
+            advGlintObj.transform.SetParent(advBtnObj.transform, false);
+            RectTransform advGlintRt = advGlintObj.AddComponent<RectTransform>();
+            advGlintRt.anchorMin = new Vector2(0.5f, 1f);
+            advGlintRt.anchorMax = new Vector2(0.5f, 1f);
+            advGlintRt.pivot = new Vector2(0.5f, 0.5f);
+            advGlintRt.anchoredPosition = new Vector2(250, -18f);
+            advGlintRt.sizeDelta = new Vector2(16, 16);
+            Image advGlintImg = advGlintObj.AddComponent<Image>();
+            advGlintImg.sprite = GemIconFactory.GetStarSprite(true);
+            advGlintImg.color = new Color(1f, 1f, 1f, 0.75f);
+            advGlintImg.raycastTarget = false;
+
             // Content lockup with HorizontalLayoutGroup so Icon + Text NEVER overlap!
             GameObject advContent = new GameObject("ContentLockup");
             advContent.transform.SetParent(advBtnObj.transform, false);
             RectTransform acRt = advContent.AddComponent<RectTransform>();
-            acRt.anchoredPosition = new Vector2(0, 4);
+            acRt.anchoredPosition = new Vector2(0, 8); // Centered on raised cap
             acRt.sizeDelta = new Vector2(500, 70);
 
             HorizontalLayoutGroup aHlg = advContent.AddComponent<HorizontalLayoutGroup>();
             aHlg.childAlignment = TextAnchor.MiddleCenter;
             aHlg.childForceExpandWidth = false;
             aHlg.childForceExpandHeight = false;
-            aHlg.spacing = 18f;
+            aHlg.spacing = 20f;
 
-            // Location Pin Icon
+            // Location Pin Icon with Embossed 3D Shadow
             GameObject pinIconObj = new GameObject("PinIcon");
             pinIconObj.transform.SetParent(advContent.transform, false);
             RectTransform pinRt = pinIconObj.AddComponent<RectTransform>();
-            pinRt.sizeDelta = new Vector2(42, 52);
+            pinRt.sizeDelta = new Vector2(44, 54);
             LayoutElement pinLe = pinIconObj.AddComponent<LayoutElement>();
-            pinLe.preferredWidth = 42;
-            pinLe.preferredHeight = 52;
+            pinLe.preferredWidth = 44;
+            pinLe.preferredHeight = 54;
             Image pinImg = pinIconObj.AddComponent<Image>();
             pinImg.sprite = GemIconFactory.GetMapPinSprite();
             pinImg.raycastTarget = false;
+            Shadow pinSh = pinIconObj.AddComponent<Shadow>();
+            pinSh.effectColor = new Color(0.45f, 0.18f, 0.01f, 0.65f);
+            pinSh.effectDistance = new Vector2(0, -3);
 
-            // Mode Title: "Adventure"
-            GameObject advTitleObj = CreateText(advContent.transform, Vector2.zero, new Vector2(280, 60), "Adventure", 52, FontStyle.BoldAndItalic, Color.white, TextAnchor.MiddleLeft, m_CandyFont);
+            // Mode Title: "Adventure" with Deep 3D Drop Shadow + Subtle Outline
+            GameObject advTitleObj = CreateText(advContent.transform, Vector2.zero, new Vector2(290, 60), "Adventure", 52, FontStyle.BoldAndItalic, Color.white, TextAnchor.MiddleLeft, m_CandyFont);
             LayoutElement advTxtLe = advTitleObj.AddComponent<LayoutElement>();
-            advTxtLe.preferredWidth = 280;
+            advTxtLe.preferredWidth = 290;
             advTxtLe.preferredHeight = 60;
             Shadow advTxtSh = advTitleObj.AddComponent<Shadow>();
-            advTxtSh.effectColor = new Color(0.65f, 0.30f, 0.01f, 0.85f);
-            advTxtSh.effectDistance = new Vector2(1, -2);
+            advTxtSh.effectColor = new Color(0.48f, 0.18f, 0.01f, 0.95f);
+            advTxtSh.effectDistance = new Vector2(0, -4);
+            Outline advTxtOut = advTitleObj.AddComponent<Outline>();
+            advTxtOut.effectColor = new Color(0.65f, 0.28f, 0.01f, 0.40f);
+            advTxtOut.effectDistance = new Vector2(1, -1);
 
-            // 6. Classic Button (Bottom Section Bottom Button - Chunky 3D Mint-Green with Infinity Icon)
+            // 6a. Classic Button Ambient Drop Shadow (Soft dark-blue shadow badge floating underneath)
+            GameObject clShadowObj = new GameObject("Button_Classic_Shadow");
+            clShadowObj.transform.SetParent(centerObj.transform, false);
+            RectTransform clShadowRt = clShadowObj.AddComponent<RectTransform>();
+            clShadowRt.anchoredPosition = new Vector2(0, clBtnY - 7f);
+            clShadowRt.sizeDelta = new Vector2(644, 126);
+            Image clShadowImg = clShadowObj.AddComponent<Image>();
+            clShadowImg.sprite = SpriteFactory.GetPillSprite(new Color(0.04f, 0.08f, 0.22f, 0.55f));
+            clShadowImg.type = Image.Type.Sliced;
+            clShadowImg.raycastTarget = false;
+
+            // 6b. Classic Button (Chunky 3D Mint-Green Candy Capsule with Gloss Sheen & Infinity Icon)
             GameObject classicBtnObj = new GameObject("Button_Classic");
             classicBtnObj.transform.SetParent(centerObj.transform, false);
             RectTransform clRt = classicBtnObj.AddComponent<RectTransform>();
@@ -1944,7 +2003,7 @@ namespace BoxBlast
             clRt.sizeDelta = new Vector2(640, 126);
 
             Image clImg = classicBtnObj.AddComponent<Image>();
-            clImg.sprite = SpriteFactory.GetChunkyBlockBlastButtonSprite(new Color(0.11f, 0.86f, 0.63f), new Color(0.06f, 0.62f, 0.44f), new Color(1f, 1f, 1f, 0.75f));
+            clImg.sprite = SpriteFactory.GetChunkyBlockBlastButtonSprite(new Color(0.12f, 0.88f, 0.62f), new Color(0.05f, 0.58f, 0.40f), new Color(1f, 1f, 1f, 0.85f));
             clImg.type = Image.Type.Sliced;
             clImg.raycastTarget = true;
 
@@ -1967,44 +2026,81 @@ namespace BoxBlast
                 }));
             });
 
+            // Curved Gloss Glass Sheen Overlay on Top Half
+            GameObject clGlossObj = new GameObject("GlossShineOverlay");
+            clGlossObj.transform.SetParent(classicBtnObj.transform, false);
+            RectTransform clGlossRt = clGlossObj.AddComponent<RectTransform>();
+            clGlossRt.anchorMin = new Vector2(0.5f, 1f);
+            clGlossRt.anchorMax = new Vector2(0.5f, 1f);
+            clGlossRt.pivot = new Vector2(0.5f, 1f);
+            clGlossRt.anchoredPosition = new Vector2(0, -6f);
+            clGlossRt.sizeDelta = new Vector2(560, 42);
+            Image clGlossImg = clGlossObj.AddComponent<Image>();
+            clGlossImg.sprite = SpriteFactory.GetButtonGlossOverlaySprite();
+            clGlossImg.type = Image.Type.Sliced;
+            clGlossImg.color = new Color(1f, 1f, 1f, 0.42f);
+            clGlossImg.raycastTarget = false;
+
+            // Sparkle Glint Dot Highlight on upper-right rim
+            GameObject clGlintObj = new GameObject("GlossDotGlint");
+            clGlintObj.transform.SetParent(classicBtnObj.transform, false);
+            RectTransform clGlintRt = clGlintObj.AddComponent<RectTransform>();
+            clGlintRt.anchorMin = new Vector2(0.5f, 1f);
+            clGlintRt.anchorMax = new Vector2(0.5f, 1f);
+            clGlintRt.pivot = new Vector2(0.5f, 0.5f);
+            clGlintRt.anchoredPosition = new Vector2(250, -18f);
+            clGlintRt.sizeDelta = new Vector2(16, 16);
+            Image clGlintImg = clGlintObj.AddComponent<Image>();
+            clGlintImg.sprite = GemIconFactory.GetStarSprite(true);
+            clGlintImg.color = new Color(1f, 1f, 1f, 0.75f);
+            clGlintImg.raycastTarget = false;
+
             // Content lockup with HorizontalLayoutGroup so Icon + Text NEVER overlap!
             GameObject clContent = new GameObject("ContentLockup");
             clContent.transform.SetParent(classicBtnObj.transform, false);
             RectTransform ccRt = clContent.AddComponent<RectTransform>();
-            ccRt.anchoredPosition = new Vector2(0, 4);
+            ccRt.anchoredPosition = new Vector2(0, 8); // Centered on raised cap
             ccRt.sizeDelta = new Vector2(500, 70);
 
             HorizontalLayoutGroup cHlg = clContent.AddComponent<HorizontalLayoutGroup>();
             cHlg.childAlignment = TextAnchor.MiddleCenter;
             cHlg.childForceExpandWidth = false;
             cHlg.childForceExpandHeight = false;
-            cHlg.spacing = 18f;
+            cHlg.spacing = 20f;
 
-            // Infinity Icon
+            // Infinity Icon with Embossed 3D Shadow
             GameObject infIconObj = new GameObject("InfinityIcon");
             infIconObj.transform.SetParent(clContent.transform, false);
             RectTransform infRt = infIconObj.AddComponent<RectTransform>();
-            infRt.sizeDelta = new Vector2(56, 30);
+            infRt.sizeDelta = new Vector2(58, 32);
             LayoutElement infLe = infIconObj.AddComponent<LayoutElement>();
-            infLe.preferredWidth = 56;
-            infLe.preferredHeight = 30;
+            infLe.preferredWidth = 58;
+            infLe.preferredHeight = 32;
             Image infImg = infIconObj.AddComponent<Image>();
             infImg.sprite = GemIconFactory.GetInfinitySprite();
             infImg.raycastTarget = false;
+            Shadow infSh = infIconObj.AddComponent<Shadow>();
+            infSh.effectColor = new Color(0.02f, 0.32f, 0.22f, 0.65f);
+            infSh.effectDistance = new Vector2(0, -3);
 
-            // Mode Title: "Classic"
-            GameObject clTitleObj = CreateText(clContent.transform, Vector2.zero, new Vector2(210, 60), "Classic", 52, FontStyle.BoldAndItalic, Color.white, TextAnchor.MiddleLeft, m_CandyFont);
+            // Mode Title: "Classic" with Deep 3D Drop Shadow + Subtle Outline
+            GameObject clTitleObj = CreateText(clContent.transform, Vector2.zero, new Vector2(220, 60), "Classic", 52, FontStyle.BoldAndItalic, Color.white, TextAnchor.MiddleLeft, m_CandyFont);
             LayoutElement clTxtLe = clTitleObj.AddComponent<LayoutElement>();
-            clTxtLe.preferredWidth = 210;
+            clTxtLe.preferredWidth = 220;
             clTxtLe.preferredHeight = 60;
             Shadow clTxtSh = clTitleObj.AddComponent<Shadow>();
-            clTxtSh.effectColor = new Color(0.04f, 0.42f, 0.30f, 0.85f);
-            clTxtSh.effectDistance = new Vector2(1, -2);
+            clTxtSh.effectColor = new Color(0.02f, 0.35f, 0.24f, 0.95f);
+            clTxtSh.effectDistance = new Vector2(0, -4);
+            Outline clTxtOut = clTitleObj.AddComponent<Outline>();
+            clTxtOut.effectColor = new Color(0.04f, 0.45f, 0.30f, 0.40f);
+            clTxtOut.effectDistance = new Vector2(1, -1);
 
             // 7. Living Animations: Add HomeButtonBreather for gentle idle pulse & crown twinkle
             HomeButtonBreather breather = centerObj.AddComponent<HomeButtonBreather>();
             breather.classicBtnRt = clRt;
+            breather.classicShadowRt = clShadowRt;
             breather.adventureBtnRt = advRt;
+            breather.adventureShadowRt = advShadowRt;
             breather.logoRt = logoRt;
             breather.crownStarGlintRt = csgRt;
 
@@ -2810,7 +2906,9 @@ namespace BoxBlast
     public class HomeButtonBreather : MonoBehaviour
     {
         public RectTransform classicBtnRt;
+        public RectTransform classicShadowRt;
         public RectTransform adventureBtnRt;
+        public RectTransform adventureShadowRt;
         public RectTransform logoRt;
         public RectTransform crownStarGlintRt;
 
@@ -2823,12 +2921,20 @@ namespace BoxBlast
             {
                 float clScale = 1.0f + 0.016f * Mathf.Sin(t * 2.4f);
                 classicBtnRt.localScale = new Vector3(clScale, clScale, 1f);
+                if (classicShadowRt != null)
+                {
+                    classicShadowRt.localScale = new Vector3(clScale, clScale, 1f);
+                }
             }
 
             if (adventureBtnRt != null)
             {
                 float advScale = 1.0f + 0.020f * Mathf.Sin(t * 2.4f + 1.4f);
                 adventureBtnRt.localScale = new Vector3(advScale, advScale, 1f);
+                if (adventureShadowRt != null)
+                {
+                    adventureShadowRt.localScale = new Vector3(advScale, advScale, 1f);
+                }
             }
 
             // 2. SPHERE BLAST 3D Candy Logo Gentle Breathing Pulse & Living Sway
